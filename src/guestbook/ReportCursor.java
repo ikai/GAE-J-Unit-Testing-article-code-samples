@@ -8,9 +8,10 @@ import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
+import javax.jdo.listener.StoreCallback;
 
 @PersistenceCapable
-public class ReportCursor {
+public class ReportCursor implements StoreCallback {
 
   @PrimaryKey
   @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY) 
@@ -26,10 +27,6 @@ public class ReportCursor {
     return key;
   }
 
-  public void setKey(Key key) {
-    this.key = key;
-  }
-
   public String getSerializedCursor() {
     return serializedCursor;
   }
@@ -42,8 +39,10 @@ public class ReportCursor {
     return timestamp;
   }
 
-  public void setTimestamp(Date timestamp) {
-    this.timestamp = timestamp;
+  @Override
+  public void jdoPreStore() {
+    this.timestamp = new Date();
+    
   }
   
 }
