@@ -57,4 +57,11 @@ public class Greeting {
     public void setDate(Date date) {
         this.date = date;
     }
+
+    @Override
+    public String toString() {
+      return "Greeting [author=" + author + ", content=" + content + ", date=" + date + ", key="
+          + key + "]";
+    }
+    
 }

@@ -42,7 +42,13 @@ public class ReportCursor implements StoreCallback {
   @Override
   public void jdoPreStore() {
     this.timestamp = new Date();
-    
+   
+  }
+
+  @Override
+  public String toString() {
+    return "ReportCursor [key=" + key + ", serializedCursor=" + serializedCursor + ", timestamp="
+        + timestamp + "]";
   }
   
 }
