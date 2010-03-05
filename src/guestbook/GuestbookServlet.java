@@ -23,7 +23,8 @@ public class GuestbookServlet extends HttpServlet {
 	protected static final int PAGE_SIZE = 3;
 	private static final long serialVersionUID = 1L;
 
-	@SuppressWarnings("unchecked")
+	@Override
+  @SuppressWarnings("unchecked")
 	public void doGet(HttpServletRequest request, HttpServletResponse response) 
 		throws IOException, ServletException {
 		UserService userService = UserServiceFactory.getUserService();
