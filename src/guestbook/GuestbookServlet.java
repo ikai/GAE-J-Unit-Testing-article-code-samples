@@ -68,6 +68,7 @@ public class GuestbookServlet extends HttpServlet {
 			extensionMap.put(JDOCursorHelper.CURSOR_EXTENSION, cursor);
     		lookaheadQuery.setExtensions(extensionMap);
     		lookaheadQuery.setUnique(true);
+    		lookaheadQuery.setRange(0, 1);
     		Greeting nextGreeting = (Greeting) lookaheadQuery.execute();
 	    		
     		if(nextGreeting != null) {

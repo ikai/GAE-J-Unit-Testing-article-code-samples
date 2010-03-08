@@ -37,8 +37,9 @@ public class MailReportJob extends HttpServlet {
 
   @Override
   @SuppressWarnings("unchecked")
-  public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-    
+  public void doGet(HttpServletRequest request, HttpServletResponse response) {
+    logger.info("Beginning cron job for report ...");
+
     // Find the first instance of a saved cursor
     PersistenceManager pm = PMF.get().getPersistenceManager();
     Query query = pm.newQuery(ReportCursor.class);
@@ -47,65 +48,74 @@ public class MailReportJob extends HttpServlet {
     query.setUnique(true);
 
     ReportCursor reportCursor = (ReportCursor) query.execute();
-    
+
     List<Greeting> newestGreetings;
     Query greetingsQuery = pm.newQuery(Greeting.class);
-    
-    if(reportCursor != null) {
+
+    if (reportCursor != null) {
       Cursor cursor = Cursor.fromWebSafeString(reportCursor.getSerializedCursor());
       Map<String, Object> extensionMap = new HashMap<String, Object>();
       extensionMap.put(JDOCursorHelper.CURSOR_EXTENSION, cursor);
-      greetingsQuery.setExtensions(extensionMap);     
+      greetingsQuery.setExtensions(extensionMap);
     }
-    
+
     greetingsQuery.setRange(0, 100);
     newestGreetings = (List<Greeting>) greetingsQuery.execute();
-    
-    if(!newestGreetings.isEmpty()) {
+
+    if (!newestGreetings.isEmpty()) {
       logger.warning("Latest size: " + newestGreetings.size());
       Cursor cursor = JDOCursorHelper.getCursor(newestGreetings);
       ReportCursor latestCursor = new ReportCursor();
       latestCursor.setSerializedCursor(cursor.toWebSafeString());
       pm.makePersistent(latestCursor);
-        
+
     }
-    
+
     mailReport(newestGreetings);
-    
+
     pm.close();
-          
+
   }
-  
+
+  @Override
+  public void doPost(HttpServletRequest request, HttpServletResponse response) {
+    doGet(request, response);
+  }
+
   protected void mailReport(List<Greeting> greetings) {
     Properties props = new Properties();
     Session session = Session.getDefaultInstance(props, null);
-    
+
     StringBuilder builder = new StringBuilder();
-    
-    for(Greeting greeting : greetings) {
-      builder.append(greeting.toString());
-      builder.append("\r\n");
-    }
 
-    String msgBody = builder.toString();
+    if (!greetings.isEmpty()) {
 
-    try {
+      for (Greeting greeting : greetings) {
+        builder.append(greeting.toString());
+        builder.append("\r\n");
+      }
+
+      String msgBody = builder.toString();
+
+      try {
         Message msg = new MimeMessage(session);
         msg.setFrom(new InternetAddress(REPORT_SENDER_EMAIL, REPORT_SENDER_NAME));
-        msg.addRecipient(Message.RecipientType.TO,
-                         new InternetAddress(REPORT_RECIPIENT_EMAIL, REPORT_RECIPIENT_NAME));
+        msg.addRecipient(Message.RecipientType.TO, new InternetAddress(REPORT_RECIPIENT_EMAIL,
+            REPORT_RECIPIENT_NAME));
         msg.setSubject(REPORT_SUBJECT);
         msg.setText(msgBody);
         Transport.send(msg);
-
-    } catch (AddressException e) {
+        logger.info("Sent report to admin.");
+      } catch (AddressException e) {
         // ...
-    } catch (MessagingException e) {
+      } catch (MessagingException e) {
         // ...
-    } catch (UnsupportedEncodingException e) {
+      } catch (UnsupportedEncodingException e) {
 
-    } 
+      }
+    } else {
+      logger.info("No new greetings to send to admin in email report.");
+    }
   }
-    
+
 }
-  
