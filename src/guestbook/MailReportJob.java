@@ -38,7 +38,6 @@ public class MailReportJob extends HttpServlet {
   @Override
   @SuppressWarnings("unchecked")
   public void doGet(HttpServletRequest request, HttpServletResponse response) {
-    logger.info("Beginning cron job for report ...");
 
     // Find the first instance of a saved cursor
     PersistenceManager pm = PMF.get().getPersistenceManager();
@@ -63,7 +62,6 @@ public class MailReportJob extends HttpServlet {
     newestGreetings = (List<Greeting>) greetingsQuery.execute();
 
     if (!newestGreetings.isEmpty()) {
-      logger.warning("Latest size: " + newestGreetings.size());
       Cursor cursor = JDOCursorHelper.getCursor(newestGreetings);
       ReportCursor latestCursor = new ReportCursor();
       latestCursor.setSerializedCursor(cursor.toWebSafeString());
@@ -105,7 +103,6 @@ public class MailReportJob extends HttpServlet {
         msg.setSubject(REPORT_SUBJECT);
         msg.setText(msgBody);
         Transport.send(msg);
-        logger.info("Sent report to admin.");
       } catch (AddressException e) {
         // ...
       } catch (MessagingException e) {
