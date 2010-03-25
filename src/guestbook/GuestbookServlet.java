@@ -27,6 +27,7 @@ public class GuestbookServlet extends HttpServlet {
     @SuppressWarnings("unchecked")
 	public void doGet(HttpServletRequest request, HttpServletResponse response) 
 		throws IOException, ServletException {
+	  
 		UserService userService = UserServiceFactory.getUserService();
 		User user = userService.getCurrentUser();
 		

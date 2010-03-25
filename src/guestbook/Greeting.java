@@ -5,6 +5,7 @@ import com.google.appengine.api.users.User;
 
 import java.util.Date;
 import javax.jdo.annotations.IdGeneratorStrategy;
+import javax.jdo.annotations.NotPersistent;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
@@ -23,6 +24,7 @@ public class Greeting {
 
     @Persistent
     private Date date;
+    
 
     public Greeting(User author, String content, Date date) {
         this.author = author;

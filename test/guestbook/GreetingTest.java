@@ -1,7 +1,7 @@
 package guestbook;
 
 
-import static org.junit.Assert.assertNotNull;
+// import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
@@ -38,9 +38,7 @@ public class GreetingTest {
     assert(true);
   }
   
-  @Test public void testFalse() {
-    assertTrue(false);
-  }
+  
   
   @Test public void trivialThing() {
     assert(true);
