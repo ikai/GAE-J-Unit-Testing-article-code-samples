@@ -4,9 +4,6 @@ import com.google.appengine.api.users.User;
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
 
-import spamcheck.SpamChecker;
-import spamcheck.SpamCheckerFactory;
-
 import java.io.IOException;
 import java.util.Date;
 
@@ -17,8 +14,6 @@ import javax.servlet.http.HttpServletResponse;
 
 public class SignGuestbookServlet extends HttpServlet {
   
-    protected final SpamChecker spamChecker = SpamCheckerFactory.getSpamChecker();
-
     @Override
     public void doPost(HttpServletRequest req, HttpServletResponse resp)
                 throws IOException {
@@ -28,24 +23,19 @@ public class SignGuestbookServlet extends HttpServlet {
         String content = req.getParameter("content");
         Date date = new Date();
         
-        String userAgent = req.getHeader("User-Agent");
-        String userIp = req.getRemoteAddr();
-        
-        if(!spamChecker.isSpam(userIp, userAgent, content)) {
                 
-          Greeting greeting = new Greeting(user, content, date);
+        Greeting greeting = new Greeting(user, content, date);
+          
+        greeting.setUserAgent(req.getHeader("User-Agent"));
+        greeting.setUserIp(req.getRemoteAddr());
 
-          PersistenceManager pm = PMF.get().getPersistenceManager();
-          try {
-              pm.makePersistent(greeting);
-          } finally {
-              pm.close();
-          }
-          resp.sendRedirect("/view");          
-        } else {
-          resp.sendRedirect("/view?spam=true");
+        PersistenceManager pm = PMF.get().getPersistenceManager();
+        try {
+            pm.makePersistent(greeting);
+        } finally {
+            pm.close();
         }
-
+        resp.sendRedirect("/view");          
+     } 
          
-    }
 }

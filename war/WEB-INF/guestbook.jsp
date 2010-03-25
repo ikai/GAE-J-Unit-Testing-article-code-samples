@@ -36,7 +36,8 @@
                   <p>An anonymous person wrote:</p>
                 </c:otherwise>
                </c:choose>
-                <blockquote>${greeting.content}</blockquote>
+             
+               <blockquote><c:if test="${greeting.spam}">[Spam] </c:if>${greeting.content}</blockquote>
             </c:forEach>
         </c:when>
 

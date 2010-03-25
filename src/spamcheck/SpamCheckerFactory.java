@@ -12,7 +12,7 @@ public final class SpamCheckerFactory {
   public static SpamChecker getSpamChecker() {
     return spamChecker;
   }
-  
+   
   protected static SpamChecker initSpamChecker() {
     
     if(spamChecker == null) {
@@ -24,8 +24,8 @@ public final class SpamCheckerFactory {
         
         spamChecker = new AkismetSpamCheckerImpl(apiKey, blogUrl);
       } catch (IOException e) {
-        // What exception to raise here?
-        throw new RuntimeException("akismet.properties not found");
+        // SpamChecker not initialized. Initialize a NoopSpamChecker
+        spamChecker = new NoopSpamChecker();
       }
     }
     
@@ -33,6 +33,30 @@ public final class SpamCheckerFactory {
   }
     
   private SpamCheckerFactory() {}
+  
+  public static class NoopSpamChecker implements SpamChecker {
+
+    @Override
+    public String getApiKey() {
+      return null;
+    }
+
+    @Override
+    public String getBlogUrl() {
+      return null;
+    }
+
+    @Override
+    public boolean isSpam(String userIp, String userAgent, String commentContent) {
+      return false;
+    }
+
+    @Override
+    public boolean verifyKey() {
+      return true;
+    }
+    
+  }
   
   
 }
